@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regularize CNPJ - Consulta Oficial</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0B4F6C 0%, #145C9E 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    /* Header */
+    .header {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .header h1 {
+      color: #0B4F6C;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 1.1em;
+    }
+
+    /* Logo da Contabilizei */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .contabilizei-logo {
+      background: linear-gradient(135deg, #00A86B, #00875A);
+      color: white;
+      padding: 15px 40px;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 2em;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 168, 107, 0.4);
+    }
+
+    .contabilizei-logo svg {
+      width: 40px;
+      height: 40px;
+      fill: white;
+    }
+
+    /* Destaques de desconto - SOMENTE TEXTO */
+    .discount-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .discount-badge {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4em;
+      font-weight: 700;
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    .pix-badge {
+      background: linear-gradient(135deg, #9146ff, #6f42c1);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4em;
+      font-weight: 700;
+      box-shadow: 0 5px 15px rgba(111, 66, 193, 0.3);
+      animation: pulse 2s infinite;
+      animation-delay: 0.3s;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+    }
+
+    .api-badge {
+      background: #28a745;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 30px;
+      display: inline-block;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+    .api-badge svg {
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    /* Selos de segurança */
+    .security-badges {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #e0e0e0;
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #145C9E;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+
+    .badge svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Main Content */
+    .main-content {
+      background: #f8f9fa;
+      border-radius: 0 0 20px 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    /* Barra de pesquisa */
+    .search-container {
+      max-width: 800px;
+      margin: 0 auto 40px;
+    }
+
+    .search-box {
+      background: white;
+      border-radius: 60px;
+      padding: 5px;
+      display: flex;
+      box-shadow: 0 5px 20px rgba(0,75,110,0.2);
+      border: 2px solid #e0e0e0;
+      transition: 0.3s;
+    }
+
+    .search-box:focus-within {
+      border-color: #145C9E;
+      box-shadow: 0 5px 25px rgba(20,92,158,0.3);
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 20px 25px;
+      border: none;
+      outline: none;
+      font-size: 1.2em;
+      border-radius: 60px 0 0 60px;
+      background: transparent;
+    }
+
+    .search-box input::placeholder {
+      color: #aaa;
+      font-size: 0.9em;
+    }
+
+    .search-box button {
+      background: #145C9E;
+      color: white;
+      border: none;
+      padding: 0 40px;
+      border-radius: 60px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: 0.3s;
+    }
+
+    .search-box button:hover {
+      background: #0B4F6C;
+      transform: scale(1.02);
+    }
+
+    .search-box button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .search-info {
+      text-align: center;
+      margin-top: 15px;
+      color: white;
+      font-size: 0.9em;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .search-info span {
+      background: rgba(255,255,255,0.2);
+      padding: 5px 10px;
+      border-radius: 20px;
+      margin: 0 5px;
+    }
+
+    /* Cards de informações */
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .card svg {
+      width: 50px;
+      height: 50px;
+      color: #145C9E;
+      margin-bottom: 15px;
+    }
+
+    .card h3 {
+      color: #0B4F6C;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .card p {
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Resultado da consulta */
+    .result-container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-top: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .result-container.active {
+      display: block;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .company-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+      margin-bottom: 20px;
+    }
+
+    .company-icon {
+      background: #145C9E;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .company-icon svg {
+      width: 30px;
+      height: 30px;
+      color: white;
+    }
+
+    .company-info {
+      flex: 1;
+    }
+
+    .company-info h2 {
+      color: #0B4F6C;
+      margin-bottom: 5px;
+    }
+
+    .company-info .fantasia {
+      color: #145C9E;
+      font-weight: 600;
+      font-size: 1.1em;
+      margin-bottom: 10px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-item .label {
+      font-size: 0.8em;
+      color: #666;
+      text-transform: uppercase;
+    }
+
+    .info-item .value {
+      font-size: 1em;
+      color: #0B4F6C;
+      font-weight: 600;
+    }
+
+    /* Status de débito - ALERTA VERMELHO CORRIGIDO */
+    .debt-status {
+      background: #fff3f3;
+      border: 2px solid #dc3545;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 25px 0;
+      text-align: center;
+    }
+
+    .alert-icon {
+      font-size: 60px;
+      color: #dc3545;
+      margin-bottom: 20px;
+      line-height: 1;
+    }
+
+    .alert-message {
+      color: #dc3545;
+      font-size: 2em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .alert-submessage {
+      color: #666;
+      font-size: 1.2em;
+    }
+
+    /* Botões de ação */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .btn {
+      padding: 18px 25px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2em;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+    }
+
+    .btn-whatsapp:hover {
+      background: #128C7E;
+      transform: scale(1.02);
+    }
+
+    .btn-secondary {
+      background: #145C9E;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #0B4F6C;
+    }
+
+    .error-message {
+      background: #fff3cd;
+      border-left: 6px solid #ffc107;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .error-message svg {
+      width: 50px;
+      height: 50px;
+      color: #ffc107;
+      margin-bottom: 15px;
+    }
+
+    .error-message h3 {
+      color: #856404;
+      margin-bottom: 10px;
+    }
+
+    .error-message p {
+      color: #856404;
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #145C9E;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .discount-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .discount-badge, .pix-badge {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .security-badges {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .info-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .search-box {
+        flex-direction: column;
+        border-radius: 30px;
+      }
+
+      .search-box input {
+        border-radius: 30px 30px 0 0;
+        text-align: center;
+      }
+
+      .search-box button {
+        border-radius: 0 0 30px 30px;
+        padding: 15px;
+        justify-content: center;
+      }
+
+      .company-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .alert-message {
+        font-size: 1.5em;
+      }
+
+      .alert-icon {
+        font-size: 50px;
+      }
+
+      .contabilizei-logo {
+        font-size: 1.5em;
+        padding: 12px 25px;
+      }
+      
+      .contabilizei-logo svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Regularize CNPJ</h1>
+      <p>Dados oficiais da Receita Federal via Brasil API</p>
+      
+      <!-- Logo da Contabilizei -->
+      <div class="logo-container">
+        <div class="contabilizei-logo">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2V7zm0 8h2v2h-2v-2z"/>
+          </svg>
+          Contabilizei
+        </div>
+      </div>
+      
+      <!-- Destaques de desconto - SOMENTE TEXTO -->
+      <div class="discount-container">
+        <div class="discount-badge">Resolva pendências com desconto</div>
+        <div class="pix-badge">Desconto Via Pix</div>
+      </div>
+
+      <div class="api-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+        Consultas em tempo real • Fonte: Brasil API
+      </div>
+
+      <!-- Selos de segurança -->
+      <div class="security-badges">
+        <div class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Site 100% Seguro
+        </div>
+        <div class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          SSL Certificado
+        </div>
+        <div class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          Dados Oficiais
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Barra de pesquisa -->
+      <div class="search-container">
+        <div class="search-box">
+          <input type="text" id="cnpjInput" placeholder="Digite o CNPJ (apenas números)" maxlength="18" oninput="formatCNPJ(this)">
+          <button onclick="consultarCNPJ()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Consultar
+          </button>
+        </div>
+        <div class="search-info">
+          <span>🔒 Consulta gratuita</span>
+          <span>⚡ Resultado imediato</span>
+          <span>📋 Dados oficiais RFB</span>
+        </div>
+      </div>
+
+      <!-- Cards informativos -->
+      <div class="info-cards">
+        <div class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+          </svg>
+          <h3>Dados Completos</h3>
+          <p>Razão social, nome fantasia, endereço, CNAE, situação cadastral e mais</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <h3>Atendimento Imediato</h3>
+          <p>Fale com nossos especialistas diretamente pelo WhatsApp</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <h3>Regularização Facilitada</h3>
+          <p>Receba orientação personalizada para regularizar seus débitos</p>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p style="color: #145C9E;">Consultando dados na Receita Federal via Brasil API...</p>
+      </div>
+
+      <!-- Resultado da consulta -->
+      <div class="result-container" id="resultado"></div>
+    </div>
+
+    <!-- Footer com dados da Contabilizei -->
+    <footer style="background: white; border-radius: 0 0 20px 20px; padding: 20px; margin-top: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00A86B" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M2 10h20"/>
+        </svg>
+        <h3 style="color: #00A86B; font-size: 1.3em;">Contabilizei</h3>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: #00A86B;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="M2 10h20"/>
+          </svg>
+          <span><strong>CNPJ:</strong> 19.542.331/0001-78</span>
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: #00A86B;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span><strong>Endereço:</strong> Av. Brigadeiro Faria Lima, 3.477, São Paulo - SP, CEP 04.513-000</span>
+        </div>
+      </div>
+      
+      <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 5px; color: #666;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <span>contato@contabilizei.com.br</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 5px; color: #666;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a1.999 1.999 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8 10a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.574 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          <span>(11) 92147-4407</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Número do WhatsApp
+    const whatsappNumber = '5511921474407';
+
+    function formatCNPJ(input) {
+      let value = input.value.replace(/\D/g, '');
+      
+      if (value.length > 14) {
+        value = value.slice(0, 14);
+      }
+      
+      if (value.length > 12) {
+        value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+      } else if (value.length > 8) {
+        value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{0,4})$/, '$1.$2.$3/$4');
+      } else if (value.length > 5) {
+        value = value.replace(/^(\d{2})(\d{3})(\d{0,3})$/, '$1.$2.$3');
+      } else if (value.length > 2) {
+        value = value.replace(/^(\d{2})(\d{0,3})$/, '$1.$2');
+      }
+      
+      input.value = value;
+    }
+
+    function formatarMoeda(valor) {
+      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function enviarWhatsApp(empresa, cnpj) {
+      const cnpjFormatado = cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+      
+      // Construir mensagem
+      let mensagem = `*Consulta de Regularização de CNPJ*%0A%0A`;
+      mensagem += `*CNPJ:* ${cnpjFormatado}%0A`;
+      mensagem += `*Empresa:* ${empresa.razao_social || 'Não informado'}%0A`;
+      mensagem += `*Fantasia:* ${empresa.nome_fantasia || 'Não informado'}%0A`;
+      mensagem += `*Situação:* ${empresa.descricao_situacao_cadastral || 'Não informado'}%0A`;
+      mensagem += `*Data Abertura:* ${empresa.data_inicio_atividade ? new Date(empresa.data_inicio_atividade).toLocaleDateString('pt-BR') : 'Não informado'}%0A`;
+      mensagem += `*Porte:* ${empresa.porte?.descricao || 'Não informado'}%0A`;
+      mensagem += `*Capital Social:* ${empresa.capital_social ? formatarMoeda(empresa.capital_social) : 'Não informado'}%0A`;
+      mensagem += `*Natureza Jurídica:* ${empresa.natureza_juridica || 'Não informado'}%0A%0A`;
+      
+      mensagem += `*ENDEREÇO:*%0A`;
+      mensagem += `${empresa.logradouro || ''}, ${empresa.numero || ''}%0A`;
+      mensagem += `${empresa.bairro || ''} - ${empresa.municipio || ''}/${empresa.uf || ''}%0A`;
+      mensagem += `CEP: ${empresa.cep || ''}%0A%0A`;
+      
+      mensagem += `*ATIVIDADE PRINCIPAL:*%0A`;
+      mensagem += `${empresa.cnae_fiscal_descricao || 'Não informado'} (CNAE: ${empresa.cnae_fiscal || ''})%0A%0A`;
+      
+      mensagem += `*⚠️ PENDÊNCIAS IDENTIFICADAS*%0A`;
+      mensagem += `O sistema apontou pendências cadastrais neste CNPJ.%0A%0A`;
+      mensagem += `Olá, vi que há opção de desconto via PIX. Quero regularizar estas pendências. Podem me ajudar?`;
+
+      const url = `https://wa.me/${whatsappNumber}?text=${mensagem}`;
+      window.open(url, '_blank');
+    }
+
+    async function consultarCNPJ() {
+      const input = document.getElementById('cnpjInput');
+      const cnpj = input.value.replace(/\D/g, '');
+      
+      if (cnpj.length !== 14) {
+        alert('Por favor, digite um CNPJ válido com 14 dígitos');
+        return;
+      }
+
+      document.getElementById('loading').classList.add('active');
+      document.getElementById('resultado').classList.remove('active');
+
+      try {
+        const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+        
+        if (!response.ok) {
+          throw new Error('CNPJ não encontrado');
+        }
+
+        const data = await response.json();
+        mostrarAlertaPendencia(data, cnpj);
+        
+      } catch (error) {
+        mostrarErro();
+      } finally {
+        document.getElementById('loading').classList.remove('active');
+      }
+    }
+
+    function mostrarAlertaPendencia(empresa, cnpj) {
+      const resultado = document.getElementById('resultado');
+      const cnpjFormatado = cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+      
+      const dataAbertura = empresa.data_inicio_atividade ? 
+        new Date(empresa.data_inicio_atividade).toLocaleDateString('pt-BR') : 
+        'Não informado';
+
+      const situacao = empresa.descricao_situacao_cadastral || 'Não informado';
+
+      resultado.innerHTML = `
+        <div class="company-header">
+          <div class="company-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M2 10h20"/>
+            </svg>
+          </div>
+          <div class="company-info">
+            <h2>${empresa.razao_social || 'Razão social não informada'}</h2>
+            <div class="fantasia">${empresa.nome_fantasia || 'Nome fantasia não informado'}</div>
+            
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">CNPJ</span>
+                <span class="value">${cnpjFormatado}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Abertura</span>
+                <span class="value">${dataAbertura}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Situação</span>
+                <span class="value" style="color: ${situacao.includes('ATIVA') ? '#28a745' : '#dc3545'};">${situacao}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Porte</span>
+                <span class="value">${empresa.porte?.descricao || 'Não informado'}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Capital Social</span>
+                <span class="value">${empresa.capital_social ? formatarMoeda(empresa.capital_social) : 'Não informado'}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Natureza Jurídica</span>
+                <span class="value">${empresa.natureza_juridica || 'Não informado'}</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+              <div class="info-item">
+                <span class="label">Endereço</span>
+                <span class="value">${empresa.logradouro || ''}, ${empresa.numero || ''} - ${empresa.bairro || ''}<br>${empresa.municipio || ''}/${empresa.uf || ''} - CEP: ${empresa.cep || ''}</span>
+              </div>
+              <div class="info-item" style="margin-top: 10px;">
+                <span class="label">Atividade Principal</span>
+                <span class="value">${empresa.cnae_fiscal_descricao || 'Não informado'} (CNAE: ${empresa.cnae_fiscal || ''})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="debt-status">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-message">PENDÊNCIAS ENCONTRADAS</div>
+          <div class="alert-submessage">Este CNPJ possui pendências cadastrais que precisam ser regularizadas.</div>
+
+          <div class="action-buttons">
+            <button class="btn btn-whatsapp" onclick='enviarWhatsApp(${JSON.stringify(empresa)}, "${cnpj}")'>
+              REGULARIZAR PENDÊNCIAS
+            </button>
+            <button class="btn btn-secondary" onclick="consultarOutro()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Consultar outro CNPJ
+            </button>
+          </div>
+        </div>
+      `;
+      
+      resultado.classList.add('active');
+    }
+
+    function mostrarErro() {
+      const resultado = document.getElementById('resultado');
+      
+      resultado.innerHTML = `
+        <div class="error-message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <h3>CNPJ não encontrado</h3>
+          <p>O CNPJ consultado não foi encontrado na base de dados da Receita Federal.</p>
+          <p>Verifique se o número foi digitado corretamente e tente novamente.</p>
+          
+          <button class="btn btn-secondary" onclick="consultarOutro()" style="margin-top: 20px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Nova Consulta
+          </button>
+        </div>
+      `;
+      
+      resultado.classList.add('active');
+    }
+
+    function consultarOutro() {
+      document.getElementById('resultado').classList.remove('active');
+      document.getElementById('cnpjInput').value = '';
+      document.getElementById('cnpjInput').focus();
+    }
+  </script>
+</body>
+</html>
